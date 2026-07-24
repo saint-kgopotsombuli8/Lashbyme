@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log In — Lashed by Me</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Login.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="signup-box">
+        <h1>Welcome Back</h1>
+        <p class="subtitle">Log in to manage your bookings and schedule.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p style="color:{{ '#1a9c53' if category == 'success' else '#d6336c' }};
+                              text-align:center; font-size:12.5px; margin-top:6px;">
+                        {{ message }}
+                    </p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('auth.login') }}">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required autofocus>
+
+            <label for="password">Password</label>
+            <div class="password-box">
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+                <i class="fa-solid fa-eye" id="togglePassword"></i>
+            </div>
+
+            <button type="submit" class="register-btn">Log In</button>
+        </form>
+
+        <p class="bottom-text">This login is for the studio owner only.</p>
+    </div>
+</div>
+
+<script>
+    const toggle = document.getElementById('togglePassword');
+    const pwd = document.getElementById('password');
+    toggle.addEventListener('click', () => {
+        const isHidden = pwd.type === 'password';
+        pwd.type = isHidden ? 'text' : 'password';
+        toggle.classList.toggle('fa-eye');
+        toggle.classList.toggle('fa-eye-slash');
+    });
+</script>
+
+</body>
+</html>

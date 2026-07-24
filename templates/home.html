@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lashed by Me</title>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Home_Page.css') }}">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <!-- ========================== Navbar ========================== -->
+    <nav class="navbar">
+        <div class="logo">Lashed by Me</div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#kits">Booking Kits</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#booking">Booking</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <a href="#booking" class="nav-cta">Book Now</a>
+    </nav>
+
+    <!-- ========================== Hero ========================== -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Enhance your beauty, elevate your confidence.</h1>
+            <p>Handcrafted lash extensions and lifts, tailored to you. Book your appointment in minutes and step out feeling like your best self.</p>
+            <div class="hero-buttons">
+                <a href="#booking" class="btn-primary">Book an Appointment</a>
+                <a href="#services" class="btn-secondary">View Services</a>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="Lashed By Me Logo" class="hero-img">
+        </div>
+    </section>
+
+    <!-- ========================== Services ========================== -->
+    <section id="services">
+        <span class="eyebrow">Services</span>
+        <h2>Find your perfect look</h2>
+        <p class="section-subtitle">From natural everyday lashes to full glam volume — every set is applied with care and precision.</p>
+
+        <div class="services-grid">
+            <div class="service-card reveal">
+                <h3>Classic</h3>
+                <p>One extension per natural lash for a soft, everyday enhancement.</p>
+                <div class="service-price">
+                    <span>R280</span>
+                </div>
+            </div>
+
+            <div class="service-card reveal">
+                <h3>Cat Eye Classic</h3>
+                <p>Classic set styled with a subtle winged, cat-eye lift.</p>
+                <div class="service-price">
+                    <span>R350</span>
+                </div>
+            </div>
+
+            <div class="service-card reveal">
+                <h3>Cat Eye</h3>
+                <p>A full winged set that elongates and lifts the outer eye.</p>
+                <div class="service-price">
+                    <span>R380</span>
+                </div>
+            </div>
+
+            <div class="service-card reveal">
+                <h3>Mega Volume Cat Eye</h3>
+                <p>Dramatic, full volume fans styled into a bold cat-eye shape.</p>
+                <div class="service-price">
+                    <span>R400</span>
+                </div>
+            </div>
+
+            <div class="service-card reveal">
+                <h3>Hybrid</h3>
+                <p>A mix of classic and volume fans for added texture and fullness.</p>
+                <div class="service-price">
+                    <span>R350</span>
+                </div>
+            </div>
+
+            <div class="service-card reveal">
+                <h3>Wet Eye Set</h3>
+                <p>A glossy, wispy set styled for that trending "wet look" finish.</p>
+                <div class="service-price">
+                    <span>R450</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================== Booking Kits ========================== -->
+    <section id="kits">
+        <span class="eyebrow">Booking Kits</span>
+        <h2>Start your own lash journey</h2>
+        <p class="section-subtitle">Curated kits for every stage — from your very first set to full studio-grade professional work.</p>
+
+        <div class="kits-grid">
+            <div class="kit-card reveal">
+                <img src="{{ url_for('static', filename='img/Beginner_Kit.jpg') }}" alt="Beginner Lash Booking Kit">
+                <div class="kit-card-body">
+                    <h3>Beginner Lash Kit</h3>
+                    <p>Everything you need to start your lash business — lash trays, primer, bonder, glue rings, tape, microbrushes, spoolies, and a full tweezer set.</p>
+                    <a href="#contact" class="btn-secondary btn-small">Enquire About This Kit</a>
+                </div>
+            </div>
+
+            <div class="kit-card reveal">
+                <img src="{{ url_for('static', filename='img/Intermediate_Kit.jpg') }}" alt="Intermediate Lash Kit">
+                <div class="kit-card-body">
+                    <h3>Intermediate Lash Kit</h3>
+                    <p>For lash artists ready to level up — lash primer, cleanser, adhesive, adhesive booster, gel remover, lash sealant, and a practice lash map.</p>
+                    <a href="#contact" class="btn-secondary btn-small">Enquire About This Kit</a>
+                </div>
+            </div>
+
+            <div class="kit-card reveal">
+                <img src="{{ url_for('static', filename='img/Professional_Kit.jpg') }}" alt="Professional Lash Kit">
+                <div class="kit-card-body">
+                    <h3>Professional Lash Kit</h3>
+                    <p>Our full studio-grade set — C, D, and mixed curl lash trays, primer, gel remover, lash bond, lash sealant, mascara wands, and a rose gold tweezer set.</p>
+                    <a href="#contact" class="btn-secondary btn-small">Enquire About This Kit</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================== About ========================== -->
+    <section id="about">
+        <div class="about reveal">
+            <div class="about-visual">
+                <img src="{{ url_for('static', filename='img/Lash_artist.jpeg') }}" alt="Lash artist Owethu">
+                <div class="artist-overlay">
+                    <span class="overlay-title">Owethu</span>
+                    <span class="overlay-handle">@lashedbyme</span>
+                </div>
+            </div>
+            <div class="about-text">
+                <span class="eyebrow">About the artist</span>
+                <h2>Hi, I'm Owethu, the face behind Lashed by Me</h2>
+                <p>Certified lash technician passionate about helping clients feel confident in their own skin. Every set is designed around your eye shape, lifestyle, and personal style — no two clients leave looking the same.</p>
+                <p>Clean, hygienic studio. Premium products. Appointments that actually run on time.</p>
+                <div class="about-stats">
+                    <div>
+                        <strong>500+</strong>
+                        <span>Happy Clients</span>
+                    </div>
+                    <div>
+                        <strong>2+</strong>
+                        <span>Years Experience</span>
+                    </div>
+                    <div>
+                        <strong>4.9★</strong>
+                        <span>Average Rating</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================== Booking ========================== -->
+    <section id="booking">
+        <span class="eyebrow">Booking</span>
+        <h2 style="text-align:center;">Reserve your spot</h2>
+        <p class="section-subtitle" style="margin-left:auto; margin-right:auto; text-align:center;">Fill in your details below and I'll confirm your appointment as soon as possible.</p>
+
+        <div class="booking-box reveal">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" style="padding: 12px; margin-bottom: 20px; border-radius: 6px; background-color: {% if category == 'success' %}#e6f7ed{% else %}#fde8e8{% endif %}; color: {% if category == 'success' %}#1e7e34{% else %}#c81e1e{% endif %}; font-weight: 500; font-size: 14px; text-align: center;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('main.book') }}" method="POST">
+                <div class="form-row">
+                    <div>
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" placeholder="Jane Smith" required>
+                    </div>
+                    <div>
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="071 234 5678" required>
+                    </div>
+                </div>
+
+                <label for="bookingEmail">Email Address</label>
+                <input type="email" id="bookingEmail" name="email" placeholder="you@example.com" required>
+
+                <div class="form-row">
+                    <div>
+                        <label for="service">Service</label>
+                        <select id="service" name="service" required>
+                            <option value="">Choose a service</option>
+                            <option value="Classic">Classic — R280</option>
+                            <option value="Cat Eye Classic">Cat Eye Classic — R350</option>
+                            <option value="Cat Eye">Cat Eye — R380</option>
+                            <option value="Mega Volume Cat Eye">Mega Volume Cat Eye — R400</option>
+                            <option value="Hybrid">Hybrid — R350</option>
+                            <option value="Wet Eye Set">Wet Eye Set — R450</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div>
+                        <label for="date">Preferred Date</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div>
+                        <label for="time">Preferred Time</label>
+                        <input type="time" id="time" name="time" required>
+                    </div>
+                </div>
+
+                <div class="form-row" style="margin-bottom: 20px;">
+                    <div>
+                        <label for="payment_method">Payment Option</label>
+                        <select id="payment_method" name="payment_method" required onchange="updatePricePreview()">
+                            <option value="cash">Pay Physically with Cash (Pending client approval)</option>
+                            <option value="online">Pay Online Now (Save 40% immediately!)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Price preview helper -->
+                <div id="price-preview" style="font-size: 15px; margin-bottom: 20px; font-weight: 600; padding: 12px; background: #faf5f6; border-radius: 6px; color: #EC4899; border-left: 4px solid #EC4899; display: none;">
+                    Total Price: <span id="price-value">R0</span> <span id="discount-note" style="font-size:12px; color:#8a6b7d; font-weight:normal; margin-left:8px;"></span>
+                </div>
+
+                <label for="notes">Additional Notes</label>
+                <textarea id="notes" name="notes" placeholder="Anything you'd like me to know before your appointment"></textarea>
+
+                <button type="submit" class="btn-primary">Confirm Booking</button>
+            </form>
+        </div>
+
+        <script>
+        function updatePricePreview() {
+            const serviceSelect = document.getElementById("service");
+            const paymentSelect = document.getElementById("payment_method");
+            const previewDiv = document.getElementById("price-preview");
+            const priceSpan = document.getElementById("price-value");
+            const discountSpan = document.getElementById("discount-note");
+
+            const prices = {
+                "Classic": 280,
+                "Cat Eye Classic": 350,
+                "Cat Eye": 380,
+                "Mega Volume Cat Eye": 400,
+                "Hybrid": 350,
+                "Wet Eye Set": 450
+            };
+
+            const selectedService = serviceSelect.value;
+            const paymentMethod = paymentSelect.value;
+
+            if (selectedService && prices[selectedService]) {
+                let basePrice = prices[selectedService];
+                previewDiv.style.display = "block";
+
+                if (paymentMethod === "online") {
+                    let discounted = Math.round(basePrice * 0.6);
+                    priceSpan.textContent = "R" + discounted;
+                    discountSpan.textContent = "(40% online booking discount applied! Original: R" + basePrice + ")";
+                } else {
+                    priceSpan.textContent = "R" + basePrice;
+                    discountSpan.textContent = "(Pay in full with cash on arrival)";
+                }
+            } else {
+                previewDiv.style.display = "none";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const serviceSelect = document.getElementById("service");
+            if (serviceSelect) {
+                serviceSelect.addEventListener("change", updatePricePreview);
+            }
+        });
+        </script>
+    </section>
+
+    <!-- ========================== Contact ========================== -->
+    <section id="contact">
+        <span class="eyebrow">Contact</span>
+        <h2>Come say hi</h2>
+        <p class="section-subtitle">Reach out with any questions, or drop by the studio.</p>
+
+        <div class="contact">
+            <div class="contact-card reveal">
+                <i class="fa-solid fa-phone"></i>
+                <h4>Call or WhatsApp</h4>
+                <p>076 515 2935</p>
+            </div>
+            <div class="contact-card reveal">
+                <i class="fa-solid fa-envelope"></i>
+                <h4>Email</h4>
+                <p>lashedbyme7@gmail.com</p>
+            </div>
+            <div class="contact-card reveal">
+                <i class="fa-solid fa-location-dot"></i>
+                <h4>Studio Location</h4>
+                <p>Vanderbijlpark, Gauteng</p>
+            </div>
+            <div class="contact-card reveal">
+                <i class="fa-solid fa-clock"></i>
+                <h4>Hours</h4>
+                <p>Mon – Sat, 9am – 6pm</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================== Footer ========================== -->
+    <footer>
+        <div class="footer-socials">
+            <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
+        <p>&copy; 2026 Lashed by Me. All rights reserved. Designed & Developed by Kgopotso.</p>
+        <p style="margin-top: 10px; font-size: 12px;"><a href="{{ url_for('auth.login') }}" style="color:inherit; opacity:0.6; text-decoration:none;">Admin Login</a></p>
+    </footer>
+
+    <!-- ========================== Scroll-reveal animation ========================== -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const revealEls = document.querySelectorAll('.reveal');
+
+        if (!('IntersectionObserver' in window)) {
+            revealEls.forEach(el => el.classList.add('in-view'));
+            return;
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        revealEls.forEach(el => observer.observe(el));
+    });
+    </script>
+
+</body>
+</html>
