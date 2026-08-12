@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orders — Lashed by Me</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Dashboard.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            Lashed by Me
+            <span>Client Dashboard</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('main.dashboard') }}"><i class="fa-solid fa-grip"></i> Overview</a>
+            <a href="{{ url_for('main.calendar') }}"><i class="fa-solid fa-calendar-days"></i> Calendar</a>
+            <a href="{{ url_for('main.orders') }}" class="active"><i class="fa-solid fa-bag-shopping"></i> Orders</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{{ url_for('main.home') }}"><i class="fa-solid fa-arrow-left"></i> Back to site</a>
+            <a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Log out</a>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Customer Orders & Schedule Management</h1>
+                <p>Manage general customer appointments and record business events.</p>
+            </div>
+            <div class="topbar-user">
+                <div class="avatar">O</div>
+                <span>Owethu</span>
+            </div>
+        </div>
+
+        <!-- Log Calendar Event Form -->
+        <div class="card" style="margin-bottom: 24px; padding: 22px; background: white; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <h3 style="margin-bottom: 6px; font-size: 16px; font-weight: 600;"><i class="fa-solid fa-calendar-plus" style="color: #6c5ce7; margin-right: 8px;"></i> Log Calendar Event (Admin)</h3>
+            <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">
+                Record political, economic, or social events taking place in your schedule to plan business availability.
+            </p>
+
+            <form action="{{ url_for('main.add_event') }}" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <input type="text" name="title" placeholder="Event Title (e.g. Loadshedding Stage 2 / Election Day)" required style="flex: 2; min-width: 200px; padding: 9px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px;">
+                    
+                    <select name="category" required style="flex: 1; min-width: 150px; padding: 9px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; background: white;">
+                        <option value="" disabled selected>Select Category</option>
+                        <option value="Political">Political</option>
+                        <option value="Economic">Economic</option>
+                        <option value="Society">Society</option>
+                        <option value="Personal">Personal / Business</option>
+                    </select>
+
+                    <input type="date" name="date" required style="flex: 1; min-width: 140px; padding: 9px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px;">
+                </div>
+
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <input type="text" name="description" placeholder="Notes or Description (Optional)" style="flex: 3; min-width: 250px; padding: 9px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px;">
+                    <button type="submit" class="btn-primary" style="padding: 9px 18px; cursor: pointer; border: none; font-size: 13px; border-radius: 6px;"><i class="fa-solid fa-plus"></i> Save Event</button>
+                </div>
+            </form>
+
+            {% if events %}
+                <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid #eee;">
+                    <h4 style="font-size: 13px; color: #555; margin-bottom: 10px;"><i class="fa-solid fa-list-ul"></i> Saved Calendar Events</h4>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        {% for evt in events %}
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #f8f9fa; border-left: 4px solid #6c5ce7; border-radius: 4px;">
+                                <div>
+                                    <strong style="font-size: 13px; color: #2d3436;">{{ evt.title }}</strong> 
+                                    <span style="font-size: 10px; margin-left: 6px; background: #e9ecef; color: #495057; padding: 2px 6px; border-radius: 4px; font-weight: 600;">{{ evt.category }}</span>
+                                    {% if evt.description %}
+                                        <p style="font-size: 12px; color: #6c757d; margin: 2px 0 0 0;">{{ evt.description }}</p>
+                                    {% endif %}
+                                </div>
+                                <span style="font-size: 12px; font-weight: 600; color: #495057;">{{ evt.date }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- General Customer Orders Section -->
+        <div>
+            <div class="orders-col-head" style="margin-bottom: 16px;">
+                <h2>All Customer Orders</h2>
+                <span class="count">{{ public_bookings|length }} orders</span>
+            </div>
+            
+            {% if public_bookings %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
+                    {% for booking in public_bookings %}
+                        <div class="card order-card" style="margin-bottom: 0;">
+                            <div class="order-card-top">
+                                <div>
+                                    <h4>
+                                        {{ booking.full_name }}
+                                        {% if booking.client_completed_visits > 3 %}
+                                            <span style="font-size: 10px; background: #34c98a; color: white; padding: 2px 6px; border-radius: 4px; margin-left: 4px;"><i class="fa-solid fa-star"></i> Regular ({{ booking.client_completed_visits }} visits)</span>
+                                        {% elif booking.client_total_visits == 1 %}
+                                            <span style="font-size: 10px; background: #e2e8f0; color: #475569; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">New Client</span>
+                                        {% endif %}
+                                    </h4>
+                                    <p>{{ booking.phone }}</p>
+                                </div>
+                                <span class="badge badge-{{ booking.status|lower }}">{{ booking.status }}</span>
+                            </div>
+
+                            {% if booking.is_birthday_today %}
+                                <div style="background: #ffeaa7; color: #d63031; padding: 6px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; margin: 6px 0;">
+                                    🎁 <i class="fa-solid fa-cake-candles"></i> It's {{ booking.full_name }}'s Birthday Today!
+                                </div>
+                            {% endif %}
+
+                            <div class="service-line">{{ booking.service }} — R{{ booking.final_price }} · {{ booking.date }} at {{ booking.time }}</div>
+                            <div style="font-size:12px; margin-top:4px; margin-bottom:8px; display:flex; gap:8px; align-items:center;">
+                                <span class="payment-method-badge" style="background:#f1f3f5; color:#495057; padding: 2px 6px; border-radius: 4px; font-weight:600; text-transform: capitalize;">
+                                    <i class="fa-solid {% if booking.payment_method == 'online' %}fa-credit-card{% else %}fa-wallet{% endif %}" style="margin-right:4px;"></i>{{ booking.payment_method }}
+                                </span>
+                                <span class="payment-status-badge" style="background:{% if booking.payment_status == 'Paid' %}#e6f7ed{% else %}#fff3cd{% endif %}; color:{% if booking.payment_status == 'Paid' %}#1e7e34{% else %}#856404{% endif %}; padding: 2px 6px; border-radius: 4px; font-weight:600;">
+                                    {{ booking.payment_status }}
+                                </span>
+                            </div>
+                            <div class="order-card-actions">
+                                <div class="contact-icons">
+                                    <a href="tel:{{ booking.phone }}" class="icon-btn call" title="Call"><i class="fa-solid fa-phone"></i></a>
+                                    <a href="https://wa.me/{{ booking.phone|replace(' ', '')|replace('(', '')|replace(')', '')|replace('-', '') }}" target="_blank" rel="noopener" class="icon-btn whatsapp" title="Message on WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    {% if booking.status == 'Pending' %}
+                                        <form action="{{ url_for('main.update_booking_status', booking_id=booking.id, new_status='Confirmed') }}" method="POST" style="display:inline;">
+                                            <button type="submit" class="btn-ghost" style="color: green; border-color: green; cursor: pointer;">Confirm</button>
+                                        </form>
+                                    {% elif booking.status == 'Confirmed' %}
+                                        <form action="{{ url_for('main.update_booking_status', booking_id=booking.id, new_status='Completed') }}" method="POST" style="display:inline;">
+                                            <button type="submit" class="btn-ghost" style="color: blue; border-color: blue; cursor: pointer;">Complete</button>
+                                        </form>
+                                    {% endif %}
+                                    {% if booking.status != 'Cancelled' and booking.status != 'Completed' %}
+                                        <form action="{{ url_for('main.update_booking_status', booking_id=booking.id, new_status='Cancelled') }}" method="POST" style="display:inline;">
+                                            <button type="submit" class="btn-ghost" style="color: red; border-color: red; padding: 4px 8px; font-size: 11px; cursor: pointer;">Cancel</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div style="padding: 40px 20px; text-align: center; color: var(--muted); background: white; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <i class="fa-solid fa-clipboard-list" style="font-size: 24px; margin-bottom: 8px; display: block; color: #ddd;"></i>
+                    No customer bookings recorded yet.
+                </div>
+            {% endif %}
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

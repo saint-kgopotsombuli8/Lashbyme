@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Lashed by Me</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Dashboard.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            Lashed by Me
+            <span>Client Dashboard</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('main.dashboard') }}" class="active"><i class="fa-solid fa-grip"></i> Overview</a>
+            <a href="{{ url_for('main.calendar') }}"><i class="fa-solid fa-calendar-days"></i> Calendar</a>
+            <a href="{{ url_for('main.orders') }}"><i class="fa-solid fa-bag-shopping"></i> Orders</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{{ url_for('main.home') }}"><i class="fa-solid fa-arrow-left"></i> Back to site</a>
+            <a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Log out</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Welcome back, Owethu</h1>
+                <p>Here's what's happening with your bookings today.</p>
+            </div>
+            <div class="topbar-user">
+                <div class="avatar">{{ user.name[0]|upper }}</div>
+                <span>{{ user.name }}</span>
+            </div>
+        </div>
+
+        <!-- Month Filter Bar -->
+        <div class="filter-bar">
+            <span class="filter-bar-title">
+                <i class="fa-solid fa-filter"></i> Monthly Revenue Filter: 
+            </span>
+            <form method="GET" action="{{ url_for('main.dashboard') }}" id="monthFilterForm" class="filter-form">
+                <select name="month" class="month-select" onchange="document.getElementById('monthFilterForm').submit()">
+                    {% for m in available_months %}
+                        <option value="{{ m }}" {% if m == selected_month %}selected{% endif %}>
+                            {{ m }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <!-- Stat Cards Grid -->
+        <div class="stats-grid">
+            <div class="card stat-card">
+                <div class="stat-icon" style="background:var(--pink);"><i class="fa-solid fa-calendar-check"></i></div>
+                <h3>{{ total_bookings_today }}</h3>
+                <p>Appointments today</p>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon" style="background:var(--purple);"><i class="fa-solid fa-bag-shopping"></i></div>
+                <h3>{{ pending_orders }}</h3>
+                <p>Pending orders</p>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon" style="background:#34c98a;"><i class="fa-solid fa-sack-dollar"></i></div>
+                <h3>{{ revenue_monthly }}</h3>
+                <p>Revenue ({{ selected_month_label }})</p>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon" style="background:#2e86de;"><i class="fa-solid fa-vault"></i></div>
+                <h3>{{ revenue_total }}</h3>
+                <p>Total Revenue (All Time)</p>
+            </div>
+        </div>
+
+        <!-- Two Columns: Today's Schedule & Recent Orders -->
+        <div class="dash-columns">
+            <div class="card section-card">
+                <div class="section-card-head">
+                    <h2>Today's Schedule</h2>
+                    <a href="{{ url_for('main.calendar') }}">View calendar</a>
+                </div>
+                {% if today_bookings %}
+                    {% for booking in today_bookings %}
+                        <div class="list-row">
+                            <div>
+                                <div class="who">{{ booking.full_name }} — {{ booking.service }}</div>
+                                <div class="when">{{ booking.time }}</div>
+                            </div>
+                            <span class="badge badge-{{ booking.status|lower }}">{{ booking.status }}</span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="padding: 40px 20px; text-align: center; color: var(--muted); font-size: 14px;">
+                        <i class="fa-solid fa-calendar-xmark" style="font-size: 24px; margin-bottom: 8px; display: block; color: #ddd;"></i>
+                        No appointments scheduled for today.
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card section-card">
+                <div class="section-card-head">
+                    <h2>Recent Orders</h2>
+                    <a href="{{ url_for('main.orders') }}">View all</a>
+                </div>
+                {% if recent_bookings %}
+                    {% for booking in recent_bookings %}
+                        <div class="list-row">
+                            <div>
+                                <div class="who">{{ booking.full_name }}</div>
+                                <div class="when">{{ booking.service }} · {{ booking.date }}</div>
+                            </div>
+                            <span class="badge badge-{{ booking.status|lower }}">{{ booking.status }}</span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="padding: 40px 20px; text-align: center; color: var(--muted); font-size: 14px;">
+                        <i class="fa-solid fa-box-open" style="font-size: 24px; margin-bottom: 8px; display: block; color: #ddd;"></i>
+                        No bookings recorded yet.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Analytics Charts -->
+        <div class="dash-columns" style="margin-top: 24px;">
+            <div class="card section-card" style="padding: 20px;">
+                <h2>Booking Trends (Last 7 Days)</h2>
+                <div style="position: relative; height:220px; width:100%;">
+                    <canvas id="trendsChart"></canvas>
+                </div>
+            </div>
+            <div class="card section-card" style="padding: 20px;">
+                <h2>Popular Lash Styles</h2>
+                <div style="position: relative; height:220px; width:100%;">
+                    <canvas id="stylesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // Trends Line Chart
+    const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+    new Chart(trendsCtx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_dates|tojson }},
+            datasets: [{
+                label: 'Bookings',
+                data: {{ chart_date_values|tojson }},
+                borderColor: '#d4a373',
+                backgroundColor: 'rgba(212, 163, 115, 0.15)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+    });
+
+    // Styles Doughnut Chart
+    const stylesCtx = document.getElementById('stylesChart').getContext('2d');
+    new Chart(stylesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ chart_services|tojson }},
+            datasets: [{
+                data: {{ chart_service_values|tojson }},
+                backgroundColor: ['#e8c2ca', '#b5e2fa', '#f7d6e0', '#f2b5d4', '#c3e8bd', '#f5e3b5'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 12, padding: 8 } }
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>

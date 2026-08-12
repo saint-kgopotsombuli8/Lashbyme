@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendar — Lashed by Me</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/Dashboard.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            Lashed by Me
+            <span>Client Dashboard</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('main.dashboard') }}"><i class="fa-solid fa-grip"></i> Overview</a>
+            <a href="{{ url_for('main.calendar') }}" class="active"><i class="fa-solid fa-calendar-days"></i> Calendar</a>
+            <a href="{{ url_for('main.orders') }}"><i class="fa-solid fa-bag-shopping"></i> Orders</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{{ url_for('main.home') }}"><i class="fa-solid fa-arrow-left"></i> Back to site</a>
+            <a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Log out</a>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Your Calendar</h1>
+                <p>See what's booked and view social, political, or business events.</p>
+            </div>
+            <div class="topbar-user">
+                <div class="avatar">O</div>
+                <span>Owethu</span>
+            </div>
+        </div>
+
+        <div class="card" style="padding: 26px 28px;">
+            <div class="calendar-head">
+                <div class="calendar-nav">
+                    <button class="icon-btn" id="prevMonthBtn"><i class="fa-solid fa-chevron-left"></i></button>
+                    <h2 id="monthTitle">July 2026</h2>
+                    <button class="icon-btn" id="nextMonthBtn"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <button class="btn-ghost" id="todayBtn"><i class="fa-solid fa-rotate"></i> Today</button>
+            </div>
+
+            <div class="calendar-legend">
+                <span><span class="dot dot-booked"></span> Booked</span>
+                <span><span class="dot" style="background:#6c5ce7;"></span> External Event</span>
+                <span><span class="dot dot-blocked"></span> Blocked / Day off</span>
+            </div>
+
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Rendered dynamically -->
+            </div>
+        </div>
+
+        <div class="schedule-list" id="scheduleListContainer">
+            <!-- Schedule list rendered here -->
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    let bookings = [];
+    let events = [];
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+    let selectedDateStr = formatDate(new Date());
+
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+    const monthTitle = document.getElementById("monthTitle");
+    const todayBtn = document.getElementById("todayBtn");
+    const calendarGrid = document.getElementById("calendarGrid");
+    const scheduleListContainer = document.getElementById("scheduleListContainer");
+
+    function formatDate(date) {
+        let d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
+    async function fetchCalendarData() {
+        try {
+            const response = await fetch("/api/bookings");
+            const data = await response.json();
+            
+            bookings = data.bookings || [];
+            events = data.events || [];
+
+            renderCalendar();
+            renderScheduleList();
+        } catch (error) {
+            console.error("Error fetching calendar data:", error);
+        }
+    }
+
+    function renderCalendar() {
+        monthTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+        calendarGrid.innerHTML = `
+            <div class="day-label">Sun</div>
+            <div class="day-label">Mon</div>
+            <div class="day-label">Tue</div>
+            <div class="day-label">Wed</div>
+            <div class="day-label">Thu</div>
+            <div class="day-label">Fri</div>
+            <div class="day-label">Sat</div>
+        `;
+
+        const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+        const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const prevLastDay = new Date(currentYear, currentMonth, 0).getDate();
+
+        for (let i = firstDayIndex; i > 0; i--) {
+            const dayNum = prevLastDay - i + 1;
+            const cell = document.createElement("div");
+            cell.className = "calendar-cell muted";
+            cell.innerHTML = `<span class="date-num">${dayNum}</span>`;
+            calendarGrid.appendChild(cell);
+        }
+
+        for (let day = 1; day <= lastDay; day++) {
+            const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const cell = document.createElement("div");
+            cell.className = "calendar-cell";
+            
+            if (dateStr === selectedDateStr) {
+                cell.classList.add("today");
+            }
+
+            const dayBookings = bookings.filter(b => b.date === dateStr && b.status !== "Cancelled");
+            const dayEvents = events.filter(e => e.date === dateStr);
+            
+            let badgesHtml = "";
+            if (dayBookings.length > 0) {
+                badgesHtml += `<span class="cal-event booked">${dayBookings.length} booked</span>`;
+            }
+            if (dayEvents.length > 0) {
+                badgesHtml += `<span class="cal-event" style="background:#6c5ce7; color:white; font-size:10px; padding:2px 4px; border-radius:3px; display:block; margin-top:2px;">${dayEvents.length} event(s)</span>`;
+            }
+
+            cell.innerHTML = `<span class="date-num">${day}</span>${badgesHtml}`;
+            
+            cell.addEventListener("click", () => {
+                selectedDateStr = dateStr;
+                document.querySelectorAll(".calendar-cell").forEach(c => c.classList.remove("today"));
+                cell.classList.add("today");
+                renderScheduleList();
+            });
+
+            calendarGrid.appendChild(cell);
+        }
+
+        const totalCells = firstDayIndex + lastDay;
+        const nextDays = 42 - totalCells;
+        for (let i = 1; i <= nextDays; i++) {
+            const cell = document.createElement("div");
+            cell.className = "calendar-cell muted";
+            cell.innerHTML = `<span class="date-num">${i}</span>`;
+            calendarGrid.appendChild(cell);
+        }
+    }
+
+    function renderScheduleList() {
+        const parsedDate = new Date(selectedDateStr + "T00:00:00");
+        const formattedDateTitle = parsedDate.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+        
+        const dayBookings = bookings.filter(b => b.date === selectedDateStr);
+        const dayEvents = events.filter(e => e.date === selectedDateStr);
+
+        let listHtml = `
+            <div class="section-card-head" style="margin-bottom:14px;">
+                <h2 style="font-family:'Playfair Display',serif;font-style:italic;font-size:19px;">Schedule for ${formattedDateTitle}</h2>
+            </div>
+        `;
+
+        if (dayEvents.length > 0) {
+            listHtml += `<h4 style="margin-top:10px; margin-bottom:8px; font-size:13px; color:#6c5ce7;"><i class="fa-solid fa-bullhorn"></i> Events & Notices</h4>`;
+            dayEvents.forEach(evt => {
+                listHtml += `
+                    <div style="background:#f8f9fa; border-left:4px solid #6c5ce7; padding:10px 14px; margin-bottom:10px; border-radius:4px;">
+                        <strong style="color:#2d3436; font-size:14px;">${evt.title}</strong>
+                        <span style="font-size:10px; background:#e9ecef; color:#495057; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:6px;">${evt.category}</span>
+                        ${evt.description ? `<p style="margin:4px 0 0 0; font-size:12px; color:#636e72;">${evt.description}</p>` : ""}
+                    </div>
+                `;
+            });
+        }
+
+        if (dayBookings.length > 0) {
+            listHtml += `<h4 style="margin-top:14px; margin-bottom:8px; font-size:13px; color:#2d3436;"><i class="fa-solid fa-calendar-check"></i> Client Appointments</h4>`;
+            dayBookings.sort((a, b) => (a.time || "00:00").localeCompare(b.time || "00:00"));
+            
+            dayBookings.forEach(b => {
+                let statusColor = "orange";
+                if (b.status === "Confirmed") statusColor = "green";
+                if (b.status === "Completed") statusColor = "blue";
+                if (b.status === "Cancelled") statusColor = "red";
+
+                listHtml += `
+                    <div class="schedule-item" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f0f0f0; padding:12px 0;">
+                        <div class="time-block" style="font-weight:bold; margin-right:15px; color:#555;">${b.time || "12:00"}</div>
+                        <div class="details" style="flex-grow:1;">
+                            <h4 style="margin:0; font-size:15px; color:#333;">${b.name} — ${b.service} <span style="color:#d4a373; font-weight:bold; margin-left:6px;">R${b.price_charged}</span></h4>
+                            <p style="margin:2px 0 0 0; font-size:13px; color:${statusColor}; font-weight:600;">Status: ${b.status} · ${b.phone}</p>
+                            <div style="font-size:11px; margin-top:2px; display:flex; gap:6px;">
+                                <span style="background:#f1f3f5; color:#495057; padding:1px 4px; border-radius:3px; font-weight:600; text-transform:capitalize;"><i class="fa-solid ${b.payment_method === 'online' ? 'fa-credit-card' : 'fa-wallet'}" style="margin-right:2px;"></i>${b.payment_method}</span>
+                                <span style="background:${b.payment_status === 'Paid' ? '#e6f7ed' : '#fff3cd'}; color:${b.payment_status === 'Paid' ? '#1e7e34' : '#856404'}; padding:1px 4px; border-radius:3px; font-weight:600;">${b.payment_status}</span>
+                            </div>
+                            ${b.notes ? `<p style="font-style:italic; color:#777; font-size:12px; margin-top:4px; margin-bottom:0;">"${b.notes}"</p>` : ""}
+                        </div>
+
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            ${b.status === 'Pending' ? `
+                                <form action="/dashboard/bookings/${b.id}/status/Confirmed" method="POST" style="display:inline;">
+                                    <button type="submit" class="icon-btn" style="color:green; cursor:pointer; background:none; border:none;" title="Confirm"><i class="fa-solid fa-check" style="font-size:16px;"></i></button>
+                                </form>
+                            ` : ""}
+                            ${b.status === 'Confirmed' ? `
+                                <form action="/dashboard/bookings/${b.id}/status/Completed" method="POST" style="display:inline;">
+                                    <button type="submit" class="icon-btn" style="color:blue; cursor:pointer; background:none; border:none;" title="Complete"><i class="fa-solid fa-circle-check" style="font-size:16px;"></i></button>
+                                </form>
+                            ` : ""}
+                            ${b.status !== 'Cancelled' && b.status !== 'Completed' ? `
+                                <form action="/dashboard/bookings/${b.id}/status/Cancelled" method="POST" style="display:inline;">
+                                    <button type="submit" class="icon-btn" style="color:red; cursor:pointer; background:none; border:none;" title="Cancel"><i class="fa-solid fa-xmark" style="font-size:16px;"></i></button>
+                                </form>
+                            ` : ""}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        if (dayEvents.length === 0 && dayBookings.length === 0) {
+            listHtml += `
+                <div style="padding:40px 20px; text-align:center; color:var(--muted); font-size:14px; background:white; border-radius:8px; border:1px solid #f0f0f0;">
+                    <i class="fa-solid fa-calendar-xmark" style="font-size:24px; margin-bottom:8px; display:block; color:#ddd;"></i>
+                    No appointments or events scheduled for this date.
+                </div>
+            `;
+        }
+
+        scheduleListContainer.innerHTML = listHtml;
+    }
+
+    prevMonthBtn.addEventListener("click", () => {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        renderCalendar();
+    });
+
+    nextMonthBtn.addEventListener("click", () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        renderCalendar();
+    });
+
+    todayBtn.addEventListener("click", () => {
+        const today = new Date();
+        currentMonth = today.getMonth();
+        currentYear = today.getFullYear();
+        selectedDateStr = formatDate(today);
+        renderCalendar();
+        renderScheduleList();
+    });
+
+    fetchCalendarData();
+});
+</script>
+</body>
+</html>
